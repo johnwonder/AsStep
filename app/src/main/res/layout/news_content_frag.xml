@@ -21,7 +21,7 @@
     android:scaleType="fitXY"
     android:src="@drawable/spilt_line"/>
 <TextView
-    android:id="news_content"
+    android:id="@+id/news_content"
     android:layout_width="match_parent"
     android:layout_height="0dp"
     android:layout_weight="1"
