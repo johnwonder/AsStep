@@ -8,10 +8,13 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import java.net.NetPermission;
@@ -21,18 +24,50 @@ public class MainActivity extends Activity {
 
     private IntentFilter intentFilter;
 
-    private  NetworkChangeReceiver networkChangeReceiver;
+    private LocalReceiver localReceiver;
 
+    private LocalBroadcastManager localBroadcastManager;
 
+    //private  NetworkChangeReceiver networkChangeReceiver;
+
+    class LocalReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(context,"received local broadcast",Toast.LENGTH_SHORT).show();
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
+
+        Button button  =(Button)findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Intent intent = new Intent("com.example.john.broadcasttest.MY_BROADCAST");
+                //sendBroadcast(intent);
+                //sendOrderedBroadcast(intent,null);
+
+                //发送本地广播
+                Intent intent = new Intent("com.example.broadcasttest.LOCAL_BROADCAST");
+                localBroadcastManager.sendBroadcast(intent);
+            }
+        });
+
+        //注册本地广播监听器
         intentFilter = new IntentFilter();
-        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-        networkChangeReceiver = new NetworkChangeReceiver();
-        registerReceiver(networkChangeReceiver, intentFilter);
+        intentFilter.addAction("com.example.broadcasttest.LOCAL_BROADCAST");
+        localReceiver =new LocalReceiver();
+        localBroadcastManager.registerReceiver(localReceiver,intentFilter);
+
+        //intentFilter = new IntentFilter();
+        //intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        //networkChangeReceiver = new NetworkChangeReceiver();
+        //registerReceiver(networkChangeReceiver, intentFilter);
     }
 
     @Override
@@ -73,7 +108,8 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(networkChangeReceiver);
+        //unregisterReceiver(networkChangeReceiver);
+        localBroadcastManager.unregisterReceiver(localReceiver);
     }
 
 

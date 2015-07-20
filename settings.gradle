@@ -1,1 +1,1 @@
-include ':app', ':broadcasttest'
+include ':app', ':broadcasttest', ':broadcasttest2', ':broadcastbestpractice'
