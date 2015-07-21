@@ -21,7 +21,11 @@ public class MainActivity extends Activity {
     }
 
     public  void loadImage(View view){
-        startActivity(new Intent(this,ImageTest.class));
+        startActivity(new Intent(this, ImageTest.class));
+    }
+
+    public  void loadProgress(View view){
+        startActivity(new Intent(this,ProgressBarTest.class));
     }
 
     @Override
