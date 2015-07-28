@@ -1,9 +1,12 @@
 package com.example.john.broadcastbestpractice;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -12,45 +15,38 @@ import android.widget.Toast;
  */
 public class LoginActivity extends  BaseActivity {
 
+    private SharedPreferences pref;
+
+    private  SharedPreferences.Editor editor;
+
     private EditText accountEdit;
 
     private  EditText passwordEdit;
 
     private Button login;
 
-    /**
-     * Called when the activity is starting.  This is where most initialization
-     * should go: calling {@link #setContentView(int)} to inflate the
-     * activity's UI, using {@link #findViewById} to programmatically interact
-     * with widgets in the UI, calling
-     * {@link #managedQuery(Uri, String[], String, String[], String)} to retrieve
-     * cursors for data being displayed, etc.
-     * <p/>
-     * <p>You can call {@link #finish} from within this function, in
-     * which case onDestroy() will be immediately called without any of the rest
-     * of the activity lifecycle ({@link #onStart}, {@link #onResume},
-     * {@link #onPause}, etc) executing.
-     * <p/>
-     * <p><em>Derived classes must call through to the super class's
-     * implementation of this method.  If they do not, an exception will be
-     * thrown.</em></p>
-     *
-     * @param savedInstanceState If the activity is being re-initialized after
-     *                           previously being shut down then this Bundle contains the data it most
-     *                           recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
-     * @see #onStart
-     * @see #onSaveInstanceState
-     * @see #onRestoreInstanceState
-     * @see #onPostCreate
-     */
+    private CheckBox rememberPass;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
 
+        pref = PreferenceManager.getDefaultSharedPreferences(this);
         accountEdit = (EditText)findViewById(R.id.account);
         passwordEdit = (EditText)findViewById(R.id.password);
+        rememberPass = (CheckBox)findViewById(R.id.remember_pass);
         login = (Button)findViewById(R.id.login);
+
+        boolean isRemember = pref.getBoolean("remember_password",false);
+        if(isRemember){
+            String account = pref.getString("account","");
+            String password = pref.getString("password","");
+            accountEdit.setText(account);
+            passwordEdit.setText(password);
+            rememberPass.setChecked(true);
+        }
+
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,6 +54,16 @@ public class LoginActivity extends  BaseActivity {
                 String password = passwordEdit.getText().toString();
 
                 if(account.equals("admin") && password.equals("123456")){
+                    editor  = pref.edit();
+                    if(rememberPass.isChecked()){//检查复选框是否被选中
+                        editor.putBoolean("remember_password",true);
+                        editor.putString("account",account);
+                        editor.putString("password",password);
+
+                    }else{
+                        editor.clear();
+                    }
+                    editor.commit();
                     Intent intent = new Intent(LoginActivity.this,MainActivity.class);
                     startActivity(intent);
                     finish();
