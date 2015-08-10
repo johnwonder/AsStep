@@ -17,6 +17,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <provider
+            android:authorities="com.example.john.databasetest.provider"
+            android:name="com.example.john.databasetest.DatabaseProvider"/>
     </application>
 
 </manifest>
